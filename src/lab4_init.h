@@ -1,0 +1,9 @@
+void init_accelerometer(void);
+void init_TIM2(void);
+void init_adc(void);
+void init_temp_sensor(void);
+void init_pushbutton(void);
+void init_LEDS(void);
+void init_TIM4(void);
+void init_LEDS_HW_PWM(void);
+void init_EXTI(void);

@@ -139,7 +139,7 @@
             <RestoreTracepoints>0</RestoreTracepoints>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>14</TargetSelection>
+          <TargetSelection>13</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -351,7 +351,7 @@
               <MiscControls>--c99</MiscControls>
               <Define>__FPU_PRESENT=1 STM32F4XX USE_STDPERIPH_DRIVER=1 HSE_VALUE=8000000 ARM_MATH_CM4=1</Define>
               <Undefine></Undefine>
-              <IncludePath>../;../rtx_cmsis;../inc;../CMSIS/Device/ST/STM32F4xx/Include;../STM32F4xx_StdPeriph_Driver/inc</IncludePath>
+              <IncludePath>../;../rtx_cmsis;../inc;../CMSIS/Device/ST/STM32F4xx/Include;../STM32F4xx_StdPeriph_Driver/inc;..\LIS302DL\inc;..\src</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -431,6 +431,61 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../main.c</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\lab4_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_init.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\lab4_init.h</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_accelerometer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\lab4_accelerometer.c</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_accelerometer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\lab4_accelerometer.h</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\lab4_filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_filter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\lab4_filter.h</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_temp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\lab4_temp.c</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_temp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\lab4_temp.h</FilePath>
+            </File>
+            <File>
+              <FileName>fputc_debug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\fputc_debug.c</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_hw_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\lab4_hw_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_hw_pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\lab4_hw_pwm.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -2401,6 +2456,16 @@
               <FileName>arm_rfft_q31.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CMSIS\DSP_Lib\Source\TransformFunctions\arm_rfft_q31.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>LIS302DL</GroupName>
+          <Files>
+            <File>
+              <FileName>stm32f4_discovery_lis302dl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\LIS302DL\src\stm32f4_discovery_lis302dl.c</FilePath>
             </File>
           </Files>
         </Group>
