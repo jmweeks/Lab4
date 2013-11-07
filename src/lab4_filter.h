@@ -16,8 +16,8 @@
 
 /* Defines ------------------------------------------------------------------*/
 
-#ifndef MOVING_AVERAGE_FILTER_SIZE
-#define MOVING_AVERAGE_FILTER_SIZE 20																									//Size of moving average circular filter window
+#ifndef MAX_MOVING_AVERAGE_FILTER_SIZE
+#define MAX_MOVING_AVERAGE_FILTER_SIZE 32																									//Size of moving average circular filter window
 #endif
 
 /* Exported Types ---------------------------------------------------------*/
@@ -30,9 +30,10 @@
 #define MOVING_AVERAGE_STRUCT
 
 struct Moving_Average {
-	float moving_values[MOVING_AVERAGE_FILTER_SIZE];
+	float moving_values[MAX_MOVING_AVERAGE_FILTER_SIZE];
 	uint32_t index;
 	float average;
+	uint32_t filter_size;
 };
 
 #endif
@@ -47,7 +48,7 @@ struct Moving_Average {
   * @{
   */ 
 
-void init_moving_average(struct Moving_Average *moving_average);
+void init_moving_average(struct Moving_Average *moving_average, uint32_t size);
 void insert_value(struct Moving_Average *moving_average, float new_value);
 void calculate_average(struct Moving_Average *moving_average);
 

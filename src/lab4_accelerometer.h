@@ -1,5 +1,6 @@
 #include "stm32f4xx.h"
 #include "lab4_filter.h"
+#include "lab4_init.h"
 
 #ifndef PI
 #define PI 3.14159

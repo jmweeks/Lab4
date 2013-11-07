@@ -26,13 +26,14 @@
 	* @param  size: Length of moving average array
   * @retval None
   */
-void init_moving_average(struct Moving_Average *moving_average) {
+void init_moving_average(struct Moving_Average *moving_average, uint32_t size) {
 	moving_average->index = 0;																																									//Initialize all struct members to 0
 	moving_average->average = 0;
 	uint32_t i;
 	for (i=0; i<sizeof(moving_average->moving_values)/sizeof(moving_average->average); i++) {
 		moving_average->moving_values[i] = 0;
 	}
+	moving_average->filter_size = size;
 }
 
 /**
@@ -43,7 +44,7 @@ void init_moving_average(struct Moving_Average *moving_average) {
   */
 
 void insert_value(struct Moving_Average *moving_average, float new_value) {
-	if (moving_average->index == sizeof(moving_average->moving_values)/sizeof(moving_average->average)-1) {			//Check if we need to wraparound index
+	if (moving_average->index == moving_average->filter_size-1) {			//Check if we need to wraparound index
 		moving_average->index = 0;																																								//If so, set to 0
 	} else {
 		moving_average->index++;																																									//Otherwise, increment like normal
@@ -61,10 +62,10 @@ void insert_value(struct Moving_Average *moving_average, float new_value) {
 void calculate_average(struct Moving_Average *moving_average) {
 	uint32_t i = 0;																																															//Initialize internal variables
 	double sum = 0;
-	for (i=0; i<sizeof(moving_average->moving_values)/sizeof(moving_average->average); i++) {										//Loop through entire filter array
+	for (i=0; i<moving_average->filter_size; i++) {										//Loop through entire filter array
 		sum += moving_average->moving_values[i];																																	//Add all elements together
 	}
-	moving_average->average = sum/(sizeof(moving_average->moving_values)/sizeof(moving_average->average));			//Return algrbraic average
+	moving_average->average = sum/moving_average->filter_size;			//Return algrbraic average
 }
 
 /**

@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include "lab4_filter.h"
 #include "lab4_temp.h"
+#include "lab4_init.h"
 
 /* Defines ------------------------------------------------------------------*/
 
@@ -101,7 +102,7 @@ void rotate_led(uint32_t led_number) {
 void init_temp_reader(struct Temperature_Reader *temperature_reader) {
 	struct Moving_Average moving_average;
 	temperature_reader->moving_average = moving_average;
-	init_moving_average(&temperature_reader->moving_average);
+	init_moving_average(&temperature_reader->moving_average, TEMPERATURE_MOVING_AVERAGE_FILTER_SIZE);
 }
 
 /**

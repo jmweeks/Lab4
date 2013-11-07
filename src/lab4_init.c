@@ -1,6 +1,7 @@
 #include "stm32f4xx.h"
 #include "stm32f4_discovery_lis302dl.h"
-#include "lab4_hw_pwm.h"
+
+#include "lab4_init.h"
 
 /**
   * @brief  Initialize TIM2 for accelerometer sampling
@@ -25,6 +26,29 @@ void init_TIM2() {
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);																												//Enable new interrupt state
 	
 	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;																										//Specify interrupt request channel to be used
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00; 																			//Indicates pre-emption priority, 0-15, lower # =higher prriority
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00; 																						//Subpriority value 0-15, lower # =higher prriority
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 																									//Enable interrupt request channel specified earlier
+  NVIC_Init(&NVIC_InitStructure);																																		//Initialize struct parameters into tim2 nvic
+}
+
+void init_TIM3() {
+  NVIC_InitTypeDef NVIC_InitStructure;																															//Create NVIC struct for holding parameters
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;																										//Create TIM struct for holding timer parameters
+	
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE); 																							//Enable clock to TIM2
+	
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;																										//No clock division
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Down;																			//Count down
+	TIM_TimeBaseStructure.TIM_Period = 0xFFFF;																												//Max period available (2^16-1)
+	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock/(2*20*TIM_TimeBaseStructure.TIM_Period)-1;	//Set prescaler, clock now at sample rate of 25Hz
+	TIM_TimeBaseStructure.TIM_RepetitionCounter = 0x0;																								//Once counter reaches this value we restart RCR count
+	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);																										
+	
+	TIM_Cmd(TIM3, ENABLE);																																						//Enable TIM2 peripheral
+	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);																												//Enable new interrupt state
+	
+	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;																										//Specify interrupt request channel to be used
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00; 																			//Indicates pre-emption priority, 0-15, lower # =higher prriority
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00; 																						//Subpriority value 0-15, lower # =higher prriority
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 																									//Enable interrupt request channel specified earlier
@@ -71,12 +95,62 @@ void init_TIM4() {
 }
 
 /**
+  * @brief  Initialize USER pushbutton
+	* @note   This function sets up the input GPIO for the USER pushbutton.
+	*         The GPIO speed and direction are set.
+	* @param  None
+  * @retval None
+  */
+
+void init_pushbutton() {
+	GPIO_InitTypeDef GPIO_InitStructure;																															//Initialize GPIO structure
+	EXTI_InitTypeDef EXTI_InitStructure;																															//Initialize external interrupt structure
+	NVIC_InitTypeDef NVIC_InitStructure;																															//Initialize nested vector interrupt controller structure
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);																						//Enable apb2 clock to syscfg, enable external interrupts
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); 														//Enable clock to Pushbutton
+	
+	GPIO_StructInit(&GPIO_InitStructure);																										//Initialize struct, reset to default values
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;																								//Specify which pin to configure
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;																							//Takes input data
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;																				//Specify clock speed for pin
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;																						//Specify operating output
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;																						//Specify resistor pull down
+	GPIO_Init(GPIOA, &GPIO_InitStructure);			
+
+  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource0);																			//Connect/configure external interrupt on pin1 to be connected with gpioe
+	
+	EXTI_StructInit(&EXTI_InitStructure);																															//Reset external interrupt structure
+	EXTI_InitStructure.EXTI_Line = EXTI_Line0;																												//Ext interrupt coming in on line 1
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;																								//Set mode of the interrupt, external
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  																					//Ext interrupt triggered on a rising edge
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;																													//Enable new state of the interrupt
+  EXTI_Init(&EXTI_InitStructure);																																		//Configure external interrupt with defined structure parameters
+	
+	/*The Nested Vectored Interrupt Controller (NVIC) offers very fast interrupt handling and provides the vector table as a set of real vectors (addresses).
+	-Saves and restores automatically a set of the CPU registers (R0-R3, R12, PC, PSR, and LR).
+	-Does a quick entry to the next pending interrupt without a complete pop/push sequence. (Tail-Chaining)
+	-Serves a complete set of 255 (240 external) interrupts.
+	*/
+	
+	// Preemption Priority = used to determine if an interrupt that occurs after can overtake
+	// previous interrupt that is currently being serviced
+	// SubPriority = used to determine priority if two interrupts occur at the same time
+	
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;																									//Enable interrupt request channel
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;																			//Set priority of pre-emption interrupt
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x02;																							//Set sub priority
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;																										//Enable the IRQ channel specified by nvic
+  NVIC_Init(&NVIC_InitStructure);																																		//Pass struct to NVIC, initialize
+}
+
+/**
   * @brief  Initialize EXTI for tap detection
 	* @param  None
   * @retval None
   */
 
-void init_EXTI() {
+void init_EXTI1() {
 	GPIO_InitTypeDef GPIO_InitStructure;																															//Initialize GPIO structure
 	EXTI_InitTypeDef EXTI_InitStructure;																															//Initialize external interrupt structure
 	NVIC_InitTypeDef NVIC_InitStructure;																															//Initialize nested vector interrupt controller structure
@@ -133,8 +207,8 @@ void init_accelerometer() {
 	uint8_t click_window_reg_value = 0x7F;																																				//(0111 1111) Max time interval after end of latency interval where click detection can start again if device configured for double click detect
 	uint8_t click_latency_reg_value = 0x7F;																																				//(0111 1111) Time interval where click detection is disabled after first click, if configured for double click detection
 	uint8_t click_time_limit_reg_value = 0x03;																																		//(0000 0011) Maximum time interval that can elapse between the start of the click detect procedure and when the accel goes back below threshold
-	uint8_t click_threshold_z_value = 0x0A;																																				//(0000 1010) Z-axis sensitivity threshold
-	uint8_t click_threshold_xy_value = 0xAA;																																			//(0000 1010) X&Y-axis sensitivity thresholld
+	uint8_t click_threshold_z_value = 0x0F;																																				//(0000 1010) Z-axis sensitivity threshold
+	uint8_t click_threshold_xy_value = 0xFF;																																			//(0000 1010) X&Y-axis sensitivity thresholld
 	
 	//Accelerometer Configuration
 	LIS302DL_InitStruct.Power_Mode = LIS302DL_LOWPOWERMODE_ACTIVE; 																								//Either lowpower on or off
@@ -237,25 +311,25 @@ void init_temp_sensor() {
 																																											//rank (1 since in ind. mode, in case of group regular channel conv), and the sample freq.
 }
 
-/**
-  * @brief  Initialize USER pushbutton
-	* @note   This function sets up the input GPIO for the USER pushbutton.
-	*         The GPIO speed and direction are set.
-	* @param  None
-  * @retval None
-  */
-
-void init_pushbutton() {
-	GPIO_InitTypeDef gpio_init_s;
+void init_TIM5() {
+  NVIC_InitTypeDef NVIC_InitStructure;																											//NVIC initialization struct
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;																						//Timer initialization struct
 	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); 														//Enable clock to Pushbutton
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE); 																			//Enable clock to TIM5
 	
-	GPIO_StructInit(&gpio_init_s);																										//Initialize struct, reset to default values
-	gpio_init_s.GPIO_Pin = GPIO_Pin_0;																								//Specify which pin to configure
-	gpio_init_s.GPIO_Mode = GPIO_Mode_IN;																							//Takes input data
-	gpio_init_s.GPIO_Speed = GPIO_Speed_50MHz;																				//Specify clock speed for pin
-	gpio_init_s.GPIO_OType = GPIO_OType_PP;																						//Specify operating output
-	gpio_init_s.GPIO_PuPd = GPIO_PuPd_DOWN;																						//Specify resistor pull down
-	GPIO_Init(GPIOA, &gpio_init_s);							
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;																																											//No clock division
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;																																					//Counts up
+	TIM_TimeBaseStructure.TIM_Period = 0x007F;																																													//Period set for largest dynamic range of standard timer frequencies to be used
+	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / (2 * PWM_UPDATE_INTENSITY_FREQUENCY * TIM_TimeBaseStructure.TIM_Period);		//Set prescaler to determine frequency
+	TIM_TimeBaseStructure.TIM_RepetitionCounter = 0x0;																																									//Restart RCR count after counting down to this value
+	TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);																																											//Initialize struct parameters to TIM5
+	
+	TIM_Cmd(TIM5, ENABLE);																																		//Enable specified peripheral
+	TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);																								//Enable new interrupt state
+	
+	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;																						//Specify interrupt request channel to be used
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02; 															//Indicates pre-emption priority, 0-15, lower # =higher prriority
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01; 																		//Subpriority value 0-15, lower # =higher prriority
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 																					//Enable interrupt request channel specified earlier
+  NVIC_Init(&NVIC_InitStructure);																														//Initialize NVIC for TIM3 with struct params
 }
-
