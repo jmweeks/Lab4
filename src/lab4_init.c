@@ -357,7 +357,7 @@ void init_TIM5() {
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;																																											//No clock division
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;																																					//Counts up
 	TIM_TimeBaseStructure.TIM_Period = 0x007F;																																													//Period set for largest dynamic range of standard timer frequencies to be used
-	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / (2 * PWM_UPDATE_INTENSITY_FREQUENCY * TIM_TimeBaseStructure.TIM_Period);		//Set prescaler to determine frequency
+	TIM_TimeBaseStructure.TIM_Prescaler = ((float)2 * PWM_PULSE_SPEED / 1000) * SystemCoreClock / (2 * PWM_UPDATE_INTENSITY_FREQUENCY * TIM_TimeBaseStructure.TIM_Period);		//Set prescaler to determine frequency
 	TIM_TimeBaseStructure.TIM_RepetitionCounter = 0x0;																																									//Restart RCR count after counting down to this value
 	TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);																																											//Initialize struct parameters to TIM5
 	

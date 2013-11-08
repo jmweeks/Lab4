@@ -14,11 +14,11 @@
 /* Defines ------------------------------------------------------------------*/
 
 #ifndef MAX_PWM_INTENSITY																															//safety check on max intesnity
-#define MAX_PWM_INTENSITY 500																													//Number of steps between fully off and fully on
+#define MAX_PWM_INTENSITY 100																													//Number of steps between fully off and fully on
 #endif
 
 #ifndef PWM_FREQUENCY																																	//safety check on frequency
-#define PWM_FREQUENCY 500																															//Driving PWM frequency (Hz)
+#define PWM_FREQUENCY 250																															//Driving PWM frequency (Hz)
 #endif
 
 #ifndef PWM_PULSE_SPEED																																//safety check on pulse cycle
