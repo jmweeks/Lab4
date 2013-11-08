@@ -1,9 +1,9 @@
 /**
   ******************************************************************************
-  * @file    lab3_orientation.c
+  * @file    lab4_accelerometer.c
   * @author  Group 6
   * @version V1.0.0
-  * @date    1-November-2013
+  * @date    8-November-2013
   * @brief   Provides a structure and functionality to implement tilt detection
   */
 
@@ -57,8 +57,8 @@ void update_led_intensities(uint32_t led_intensities[], uint32_t length, TIM_Typ
 	{
 		TIM_SetCompare1(TIMx, led_intensities[0]);									//set the 4 TIM4 capture compare register values
 		TIM_SetCompare2(TIMx, led_intensities[1]);									//based off LED intensity
-		TIM_SetCompare3(TIMx, led_intensities[2]);
-		TIM_SetCompare4(TIMx, led_intensities[3]);
+		TIM_SetCompare3(TIMx, led_intensities[2]);									//
+		TIM_SetCompare4(TIMx, led_intensities[3]);									//
 	}
 }
 

@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    lab2_temp.c
+  * @file    lab4_temp.c
   * @author  Group 6
   * @version V1.0.0
   * @date    18-October-2013
@@ -62,30 +62,30 @@ static float get_temperature(uint16_t raw_value) {
   */
 void rotate_led(uint32_t led_number) {
 	GPIO_Write(GPIOD, 0x0); 																												//Reset all LEDs
-	switch (led_number) { 																													//Only turn the desired LED on
-		case 0:
-			GPIO_SetBits(GPIOD, GPIO_Pin_12);
+	switch (led_number) { 																													//case statments based off of led number passed to rotate function
+		case 0:																																				//remainder 0
+			GPIO_SetBits(GPIOD, GPIO_Pin_12);																						//turn on GPIO_Pin_12
 			break;
-		case 1:
-			GPIO_SetBits(GPIOD, GPIO_Pin_12);
+		case 1:																																				//remainder 1
+			GPIO_SetBits(GPIOD, GPIO_Pin_12);																						//turn on GPIO_Pin_12
 			break;
-		case 2:
-			GPIO_SetBits(GPIOD, GPIO_Pin_13);
+		case 2:																																				//remainder 2
+			GPIO_SetBits(GPIOD, GPIO_Pin_13);																						//turn on GPIO_Pin_13
 			break;
-		case 3:
-			GPIO_SetBits(GPIOD, GPIO_Pin_13);
+		case 3:																																				//remainder 3
+			GPIO_SetBits(GPIOD, GPIO_Pin_13);																						//turn on GPIO_Pin_13
 			break;
-		case 4:
-			GPIO_SetBits(GPIOD, GPIO_Pin_14);
+		case 4:																																				//remainder 4
+			GPIO_SetBits(GPIOD, GPIO_Pin_14);																						//turn on GPIO_Pin_14
 			break;
-		case 5:
-			GPIO_SetBits(GPIOD, GPIO_Pin_14);
+		case 5:																																				//remainder 5
+			GPIO_SetBits(GPIOD, GPIO_Pin_14);																						//turn on GPIO_Pin_14
 			break;
-		case 6:
-			GPIO_SetBits(GPIOD, GPIO_Pin_15);
+		case 6:																																				//remainder 6
+			GPIO_SetBits(GPIOD, GPIO_Pin_15);																						//turn on GPIO_Pin_15
 			break;
-		default:
-			GPIO_SetBits(GPIOD, GPIO_Pin_15);
+		default:																																			//remainder 7
+			GPIO_SetBits(GPIOD, GPIO_Pin_15);																						//turn on GPIO_Pin_15
 			break;
 	}
 }
@@ -99,10 +99,10 @@ void rotate_led(uint32_t led_number) {
 	* @param  *moving_average: Pointer to a Moving_Average filter struct
   * @retval None
   */
-void init_temp_reader(struct Temperature_Reader *temperature_reader) {
-	struct Moving_Average moving_average;
-	temperature_reader->moving_average = moving_average;
-	init_moving_average(&temperature_reader->moving_average, TEMPERATURE_MOVING_AVERAGE_FILTER_SIZE);
+void init_temp_reader(struct Temperature_Reader *temperature_reader) {																		//initialize temperature reader
+	struct Moving_Average moving_average;																																		//create moving average struct for values
+	temperature_reader->moving_average = moving_average;																										//move moving average struct into temperature reader struct
+	init_moving_average(&temperature_reader->moving_average, TEMPERATURE_MOVING_AVERAGE_FILTER_SIZE);				//initialize moving average in temperature struct with the currently defined filter size
 }
 
 /**

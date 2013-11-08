@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    lab3_filter.h
+  * @file    lab4_filter.h
   * @author  Group 6
   * @version V1.0.0
   * @date    1-November-2013
@@ -16,8 +16,8 @@
 
 /* Defines ------------------------------------------------------------------*/
 
-#ifndef MAX_MOVING_AVERAGE_FILTER_SIZE
-#define MAX_MOVING_AVERAGE_FILTER_SIZE 32																									//Size of moving average circular filter window
+#ifndef MAX_MOVING_AVERAGE_FILTER_SIZE																										//safety check on max moving average filter size
+#define MAX_MOVING_AVERAGE_FILTER_SIZE 32																									//Size of moving average circular filter window, control for stack size limitation
 #endif
 
 /* Exported Types ---------------------------------------------------------*/
@@ -26,14 +26,14 @@
   * @{
   */
 
-#ifndef MOVING_AVERAGE_STRUCT
-#define MOVING_AVERAGE_STRUCT
+#ifndef MOVING_AVERAGE_STRUCT																															//safety check on moving average struct
+#define MOVING_AVERAGE_STRUCT																															//define moving average struct
 
-struct Moving_Average {
-	float moving_values[MAX_MOVING_AVERAGE_FILTER_SIZE];
-	uint32_t index;
-	float average;
-	uint32_t filter_size;
+struct Moving_Average {																																		//moving average filter struct components
+	float moving_values[MAX_MOVING_AVERAGE_FILTER_SIZE];																		//all filters this long
+	uint32_t index;																																					//index in filter
+	float average;																																					//average of used filter
+	uint32_t filter_size;																																		//how much of available filter we use
 };
 
 #endif

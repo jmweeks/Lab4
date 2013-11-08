@@ -1,3 +1,25 @@
+/**
+  ******************************************************************************
+  * @file    lab4_init.c
+  * @author  Group 6
+  * @version V1.0.0
+  * @date    8-November-2013
+  * @brief   This file provides initialization functions for the following:
+	*           - TIM2 (HW Timer for accelerometer sampling)
+	*           - TIM3 (HW Timer for temperature sampling)
+	*           - TIM4 (HW Timer for hw pwm)
+	*           - TIM5 (HW Timer for hw pwm intensity update)
+	*						- Accelerometer
+	*						- Temperature Sensor
+	*						- ADC for Temperature Sensor
+	*           - EXTI0 (External interrupt for pushbutton detection)
+	*           - EXTI1 (External interrupt for tap detection)
+	*           - GPIO initialization for measurement of accelerometer sampling rate
+  */
+
+/* Includes ------------------------------------------------------------------*/
+
+
 #include "stm32f4xx.h"
 #include "stm32f4_discovery_lis302dl.h"
 
@@ -32,6 +54,11 @@ void init_TIM2() {
   NVIC_Init(&NVIC_InitStructure);																																		//Initialize struct parameters into tim2 nvic
 }
 
+/**
+  * @brief  Initialize TIM3 for temperature sensor sampling
+	* @param  None
+  * @retval None
+  */
 void init_TIM3() {
   NVIC_InitTypeDef NVIC_InitStructure;																															//Create NVIC struct for holding parameters
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;																										//Create TIM struct for holding timer parameters
@@ -63,10 +90,10 @@ void init_TIM3() {
 
 void init_TIM4() {
 	
-	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-	TIM_OCInitTypeDef  TIM_OCInitStructure;
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;																																		//timer struct for holding configuration parameters
+	TIM_OCInitTypeDef  TIM_OCInitStructure;																																						//output compare struct for holding pwm configuration parameters
 	
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);																			//Clock enable to TIM4
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);																															//Clock enable to TIM4
 	
 	TIM_TimeBaseStructure.TIM_Period = MAX_PWM_INTENSITY;																															//Period = max intensity for pwm
 	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / (2 * PWM_FREQUENCY * TIM_TimeBaseStructure.TIM_Period);		//Set prescaler for LED function
@@ -108,20 +135,20 @@ void init_pushbutton() {
 	NVIC_InitTypeDef NVIC_InitStructure;																															//Initialize nested vector interrupt controller structure
 	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);																						//Enable apb2 clock to syscfg, enable external interrupts
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); 														//Enable clock to Pushbutton
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); 																						//Enable clock to Pushbutton
 	
-	GPIO_StructInit(&GPIO_InitStructure);																										//Initialize struct, reset to default values
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;																								//Specify which pin to configure
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;																							//Takes input data
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;																				//Specify clock speed for pin
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;																						//Specify operating output
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;																						//Specify resistor pull down
+	GPIO_StructInit(&GPIO_InitStructure);																															//Initialize struct, reset to default values
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;																													//Specify which pin to configure
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;																											//Takes input data
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;																									//Specify clock speed for pin
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;																										//Specify operating output
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;																										//Specify resistor pull down
 	GPIO_Init(GPIOA, &GPIO_InitStructure);			
 
-  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource0);																			//Connect/configure external interrupt on pin1 to be connected with gpioe
+  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource0);																			//Connect/configure external interrupt on pin0 to be connected with GPIOA
 	
 	EXTI_StructInit(&EXTI_InitStructure);																															//Reset external interrupt structure
-	EXTI_InitStructure.EXTI_Line = EXTI_Line0;																												//Ext interrupt coming in on line 1
+	EXTI_InitStructure.EXTI_Line = EXTI_Line0;																												//Ext interrupt coming in on line 0
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;																								//Set mode of the interrupt, external
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  																					//Ext interrupt triggered on a rising edge
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;																													//Enable new state of the interrupt
@@ -137,7 +164,7 @@ void init_pushbutton() {
 	// previous interrupt that is currently being serviced
 	// SubPriority = used to determine priority if two interrupts occur at the same time
 	
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;																									//Enable interrupt request channel
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;																									//Enable interrupt request channel 0
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;																			//Set priority of pre-emption interrupt
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x02;																							//Set sub priority
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;																										//Enable the IRQ channel specified by nvic
@@ -252,18 +279,23 @@ void init_LEDS_HW_PWM() {
   GPIO_PinAFConfig(GPIOD, GPIO_PinSource15, GPIO_AF_TIM4); 
 }
 
+/**
+  * @brief  Initialize LEDs for use with TIM3 HW timer, flashing lights and temperature sensor sampling.
+	* @param  None
+  * @retval None
+  */
 void init_LEDS() {
 	GPIO_InitTypeDef gpio_init_s;
 	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE); 															//Enable clock to LEDs
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE); 																		//Enable clock to LEDs
 	
 	GPIO_StructInit(&gpio_init_s);
-	gpio_init_s.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15; 			//Initialize 4 LEDs for use, attached to these pins
-	gpio_init_s.GPIO_Mode = GPIO_Mode_OUT;																							//we want these pins to be outputs
-	gpio_init_s.GPIO_Speed = GPIO_Speed_50MHz;																					//clock freq to pin
-	gpio_init_s.GPIO_OType = GPIO_OType_PP;																							//push-pull, instead of open drain
-	gpio_init_s.GPIO_PuPd = GPIO_PuPd_NOPULL;																						//sets pulldown resistors to be inactive
-	GPIO_Init(GPIOD, &gpio_init_s);																											// Initializes the peripherals with the specified params
+	gpio_init_s.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15; 						//Initialize 4 LEDs for use, attached to these pins
+	gpio_init_s.GPIO_Mode = GPIO_Mode_OUT;																										//we want these pins to be outputs
+	gpio_init_s.GPIO_Speed = GPIO_Speed_50MHz;																								//clock freq to pin
+	gpio_init_s.GPIO_OType = GPIO_OType_PP;																										//push-pull, instead of open drain
+	gpio_init_s.GPIO_PuPd = GPIO_PuPd_NOPULL;																									//sets pulldown resistors to be inactive
+	GPIO_Init(GPIOD, &gpio_init_s);																														// Initializes the peripherals with the specified params
 }
 
 /**
@@ -311,11 +343,16 @@ void init_temp_sensor() {
 																																											//rank (1 since in ind. mode, in case of group regular channel conv), and the sample freq.
 }
 
+/**
+  * @brief  Initialize TIM5 for use in updating LED intensity in HW pwm mode.
+	* @param  None
+  * @retval None
+  */
 void init_TIM5() {
-  NVIC_InitTypeDef NVIC_InitStructure;																											//NVIC initialization struct
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;																						//Timer initialization struct
+  NVIC_InitTypeDef NVIC_InitStructure;																								//NVIC initialization struct
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;																			//Timer initialization struct
 	
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE); 																			//Enable clock to TIM5
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE); 																//Enable clock to TIM5
 	
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;																																											//No clock division
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;																																					//Counts up
@@ -324,12 +361,12 @@ void init_TIM5() {
 	TIM_TimeBaseStructure.TIM_RepetitionCounter = 0x0;																																									//Restart RCR count after counting down to this value
 	TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);																																											//Initialize struct parameters to TIM5
 	
-	TIM_Cmd(TIM5, ENABLE);																																		//Enable specified peripheral
-	TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);																								//Enable new interrupt state
+	TIM_Cmd(TIM5, ENABLE);																															//Enable specified peripheral
+	TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);																					//Enable new interrupt state
 	
-	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;																						//Specify interrupt request channel to be used
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02; 															//Indicates pre-emption priority, 0-15, lower # =higher prriority
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01; 																		//Subpriority value 0-15, lower # =higher prriority
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 																					//Enable interrupt request channel specified earlier
-  NVIC_Init(&NVIC_InitStructure);																														//Initialize NVIC for TIM3 with struct params
+	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;																			//Specify interrupt request channel to be used
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02; 												//Indicates pre-emption priority, 0-15, lower # =higher prriority
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01; 															//Subpriority value 0-15, lower # =higher prriority
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 																		//Enable interrupt request channel specified earlier
+  NVIC_Init(&NVIC_InitStructure);																											//Initialize NVIC for TIM3 with struct params
 }

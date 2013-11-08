@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    lab2_temp.h
+  * @file    lab4_temp.h
   * @author  Group 6
   * @version V1.0.0
   * @date    18-October-2013
@@ -20,11 +20,11 @@
   * @{
   */ 
 
-#ifndef TEMPERATURE_READER_STRUCT
-#define TEMPERATURE_READER_STRUCT
+#ifndef TEMPERATURE_READER_STRUCT																						//safety check on temperature reader structure
+#define TEMPERATURE_READER_STRUCT																						//define temperature reader structure
 
-struct Temperature_Reader {
-	struct Moving_Average moving_average;
+struct Temperature_Reader {																									//temperature reader structure
+	struct Moving_Average moving_average;																			//contains moving average window
 };
 
 #endif
