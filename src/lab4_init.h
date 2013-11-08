@@ -60,7 +60,7 @@
   * @{
   */ 
 
-void init_accelerometer(void);
+void init_accelerometer(void);								
 void init_TIM2(void);
 void init_TIM3(void);
 void init_adc(void);

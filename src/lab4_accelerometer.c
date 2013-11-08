@@ -124,14 +124,14 @@ void display_orientation(struct Orientation *orientation) {
 		new_led_intensities[0] = 0;																																														//Also ensures that opposing LEDs are not on at the same time
 	} else {
 		new_led_intensities[2] = 0;
-		new_led_intensities[0] = -orientation->moving_average_roll.average * MAX_PWM_INTENSITY / 90;					
+		new_led_intensities[0] = -orientation->moving_average_roll.average * MAX_PWM_INTENSITY / 90;													//Set LED for -roll, turn +roll LED off
 	}
 	if (orientation->moving_average_pitch.average >= 0) {
-		new_led_intensities[3] = orientation->moving_average_pitch.average * MAX_PWM_INTENSITY / 90;					
+		new_led_intensities[3] = orientation->moving_average_pitch.average * MAX_PWM_INTENSITY / 90;													//set +pitch LED on to specified intensity, turn off -pitch LED
 		new_led_intensities[1] = 0;
 	} else {
 		new_led_intensities[3] = 0;
-		new_led_intensities[1] = -orientation->moving_average_pitch.average * MAX_PWM_INTENSITY / 90;					
+		new_led_intensities[1] = -orientation->moving_average_pitch.average * MAX_PWM_INTENSITY / 90;													//set -pitch LED to specified intensity, turn off +pitch LED
 	}
 	update_led_intensities(new_led_intensities, sizeof(new_led_intensities)/sizeof(new_led_intensities[0]), TIM4);								//Update LED intensities
 }

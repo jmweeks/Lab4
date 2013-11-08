@@ -19,6 +19,15 @@
 #include "lab4_accelerometer.h"
 #include "lab4_temp.h"
 
+/* Defines--------------------------------------------------------------------*/
+#ifndef SW_FLASHING_MS							//safety check on SW_FLASHING_MS
+#define	SW_FLASHING_MS 500					//500ms flashing interval for SW LED mode
+#endif
+
+#ifndef PUSHBUTTON_DELAY						//safety check on define
+#define	PUSHBUTTON_DELAY 10					//10ms pushbutton delay for debouncing
+#endif
+
 /*!
  @brief Thread to perform menial tasks such as switching LEDs
  @param argument Unused
@@ -96,7 +105,7 @@ int main (void) {
 /**
   * @}
   */
-
+//aaaaaaaa//aaaaaaaa//aaaaaaaa//aaaaaaaa//aaaaaaaa//aaaaaaaa//aaaaaaaa//aaaaaaaa//aaaaaaaa
 /* Public Functions ---------------------------------------------------------*/
 
 /** @defgroup Public_Functions
@@ -212,9 +221,9 @@ void pushbutton_thread(void const *arguments) {					//pushbutton interrupt threa
 				mode = 1;																				//accelerometer tilt angle display mode
 		}			
 		osMutexRelease(mode_mutex);													//release mode mutex
-		osDelay(10);																				//delay 10ms (debounce)
+		osDelay(PUSHBUTTON_DELAY);																				//delay 10ms (debounce)
 		while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)) {	//reading pushbutton input
-			osDelay(10);																			//delay 10ms (debounce)
+			osDelay(PUSHBUTTON_DELAY);																			//delay 10ms (debounce)
 		}
 		osSignalClear(tid_pushbutton_thread, 0x0001);				//clear signal, safety
 	}
@@ -252,7 +261,7 @@ void sw_pwm_thread(void const *arguments) {							//sw flashing LED mode
 				osMutexRelease(led_mutex);											//release LED mutex
 			}
 		}
-		osDelay(500);																				//sw delay, 500ms flash, time spent off, then on etc.
+		osDelay(SW_FLASHING_MS);														//sw delay, 500ms flash, time spent off, then on etc.
 	}
 }
 
@@ -300,10 +309,10 @@ void hw_pwm_thread(void const *arguments) {							//hw pwm thread
   */
 
 void TIM2_IRQHandler(void) {
-  if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)													//Checks interrupt status register to ensure an interrupt is pending
+  if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)		//Checks interrupt status register to ensure an interrupt is pending
   {
-    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);																//Reset interrupt pending bit
-		osSignalSet(tid_accelerometer_thread, 0x0001);														//send signal to accelerometer thread, time to sample and display tilt angle
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);					//Reset interrupt pending bit
+		osSignalSet(tid_accelerometer_thread, 0x0001);			//send signal to accelerometer thread, time to sample and display tilt angle
   }
 }
 
@@ -313,10 +322,10 @@ void TIM2_IRQHandler(void) {
   * @retval None
   */
 void TIM3_IRQHandler(void) {
-  if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)													//Checks interrupt status register to ensure an interrupt is pending
+  if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)			//Checks interrupt status register to ensure an interrupt is pending
   {
-    TIM_ClearITPendingBit(TIM3, TIM_IT_Update);																//Reset interrupt pending bit
-		osSignalSet(tid_temperature_thread, 0x0001);															//send signal to temperature sensor thread, time to sample display/rotate LEDs
+    TIM_ClearITPendingBit(TIM3, TIM_IT_Update);						//Reset interrupt pending bit
+		osSignalSet(tid_temperature_thread, 0x0001);					//send signal to temperature sensor thread, time to sample display/rotate LEDs
   }
 }
 
@@ -326,9 +335,9 @@ void TIM3_IRQHandler(void) {
   * @retval None
   */
 void TIM4_IRQHandler(void) {
-  if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)													//Checks interrupt status register to ensure an interrupt is pending
+  if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)			//Checks interrupt status register to ensure an interrupt is pending
   {
-    TIM_ClearITPendingBit(TIM4, TIM_IT_Update);																//Reset interrupt pending bit
+    TIM_ClearITPendingBit(TIM4, TIM_IT_Update);						//Reset interrupt pending bit
   }
 }
 
@@ -338,10 +347,10 @@ void TIM4_IRQHandler(void) {
   * @retval None
   */
 void TIM5_IRQHandler(void) {
-  if (TIM_GetITStatus(TIM5, TIM_IT_Update) != RESET)													//Checks interrupt status register to ensure an interrupt is pending
+  if (TIM_GetITStatus(TIM5, TIM_IT_Update) != RESET)			//Checks interrupt status register to ensure an interrupt is pending
   {
-    TIM_ClearITPendingBit(TIM5, TIM_IT_Update);																//Reset interrupt pending bit
-		osSignalSet(tid_hw_pwm_thread, 0x0001);																		//send signal to hw pwm to update LED intensity
+    TIM_ClearITPendingBit(TIM5, TIM_IT_Update);						//Reset interrupt pending bit
+		osSignalSet(tid_hw_pwm_thread, 0x0001);								//send signal to hw pwm to update LED intensity
   }
 }
 
@@ -352,10 +361,10 @@ void TIM5_IRQHandler(void) {
   */
 void EXTI0_IRQHandler(void)
 {
-  if(EXTI_GetITStatus(EXTI_Line0) != RESET)																		//Checks interrupt status register to ensure an interrupt is pending
+  if(EXTI_GetITStatus(EXTI_Line0) != RESET)								//Checks interrupt status register to ensure an interrupt is pending
   {
-    EXTI_ClearITPendingBit(EXTI_Line0);																				//Reset interrupt pending bit
-		osSignalSet(tid_pushbutton_thread, 0x0001);																//send signal to pusbutton thread to switch submodes
+    EXTI_ClearITPendingBit(EXTI_Line0);										//Reset interrupt pending bit
+		osSignalSet(tid_pushbutton_thread, 0x0001);						//send signal to pusbutton thread to switch submodes
   }
 }
 
@@ -366,10 +375,10 @@ void EXTI0_IRQHandler(void)
   */
 void EXTI1_IRQHandler(void)
 {
-  if(EXTI_GetITStatus(EXTI_Line1) != RESET)																		//Checks interrupt status register to ensure an interrupt is pending
+  if(EXTI_GetITStatus(EXTI_Line1) != RESET)								//Checks interrupt status register to ensure an interrupt is pending
   {
-    EXTI_ClearITPendingBit(EXTI_Line1);																				//Reset interrupt pending bit
-		osSignalSet(tid_tap_thread, 0x0001);																			//send signal to tap detection thread to signal to switch modes
+    EXTI_ClearITPendingBit(EXTI_Line1);										//Reset interrupt pending bit
+		osSignalSet(tid_tap_thread, 0x0001);									//send signal to tap detection thread to signal to switch modes
   }
 }
 

@@ -16,7 +16,7 @@ Section Cross References
     rtx_conf_cm.o(.constdata) refers to rt_cmsis.o(i.osTimerThread) for osTimerThread
     rtx_conf_cm.o(.constdata) refers to rtx_conf_cm.o(.bss) for os_messageQ_q_osTimerMessageQ
     rtx_conf_cm.o(.constdata) refers to main.o(.text) for main
-    main.o(.text) refers to lab4_init.o(.text) for init_accelerometer
+    main.o(.text) refers to lab4_init.o(.text) for init_TIM2
     main.o(.text) refers to rt_cmsis.o(i.osMutexCreate) for osMutexCreate
     main.o(.text) refers to rt_cmsis.o(i.osThreadCreate) for osThreadCreate
     main.o(.text) refers to rt_cmsis.o(i.osDelay) for osDelay
@@ -1881,26 +1881,26 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-      1672        136          0          0          0       3201   lab4_accelerometer.o
-       256         14          0          0          0       1557   lab4_filter.o
-      1176         38          0          0          0       8437   lab4_init.o
-       304         32          0          0          0       1532   lab4_temp.o
-      1112         88        104         36         24       9365   main.o
-       228         22          0          0          0       3561   misc.o
-        24          6         88         16      10644       6420   rtx_conf_cm.o
+      1672        136          0          0          0       3189   lab4_accelerometer.o
+       256         14          0          0          0       1553   lab4_filter.o
+      1176         38          0          0          0       8445   lab4_init.o
+       304         32          0          0          0       1524   lab4_temp.o
+      1112         88        104         36         24       9349   main.o
+       228         22          0          0          0       3553   misc.o
+        24          6         88         16      10644       6408   rtx_conf_cm.o
         36          8        392          0       1024        764   startup_stm32f4xx.o
-       960         18          0          4          0       4200   stm32f4_discovery_lis302dl.o
-      1136         28          0          0          0      24442   stm32f4xx_adc.o
-       284         10          0          0          0       4743   stm32f4xx_exti.o
-       604         36          0          0          0      10473   stm32f4xx_gpio.o
-      1416         48          0         16          0      23883   stm32f4xx_rcc.o
-      1012         22          0          0          0      14901   stm32f4xx_spi.o
-       140         12          0          0          0       1683   stm32f4xx_syscfg.o
-      3234         60          0          0          0      42120   stm32f4xx_tim.o
-       524         44          0         20          0     265359   system_stm32f4xx.o
+       960         18          0          4          0       4196   stm32f4_discovery_lis302dl.o
+      1136         28          0          0          0      24430   stm32f4xx_adc.o
+       284         10          0          0          0       4735   stm32f4xx_exti.o
+       604         36          0          0          0      10465   stm32f4xx_gpio.o
+      1416         48          0         16          0      23871   stm32f4xx_rcc.o
+      1012         22          0          0          0      14889   stm32f4xx_spi.o
+       140         12          0          0          0       1679   stm32f4xx_syscfg.o
+      3234         60          0          0          0      42108   stm32f4xx_tim.o
+       524         44          0         20          0     265323   system_stm32f4xx.o
 
     ----------------------------------------------------------------------
-     14120        622        636         92      11692     426641   Object Totals
+     14120        622        636         92      11692     426481   Object Totals
          0          0         48          0          0          0   (incl. Generated)
          2          0          4          0          0          0   (incl. Padding)
 
@@ -1983,8 +1983,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     25836       1606        932        124      11792     486929   Grand Totals
-     25836       1606        932        124      11792     486929   ELF Image Totals
+     25836       1606        932        124      11792     486769   Grand Totals
+     25836       1606        932        124      11792     486769   ELF Image Totals
      25836       1606        932        124          0          0   ROM Totals
 
 ==============================================================================
